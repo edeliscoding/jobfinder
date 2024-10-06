@@ -227,6 +227,10 @@ const JobListPage = () => {
     }
 
     try {
+      // if (Number(filters.salaryMin) > Number(filters.salaryMax)) {
+      //   alert("Min salary cannot be greater than Max salary");
+      //   return;
+      // }
       const res = await fetch(`/api/jobs?${query.toString()}`);
       const data = await res.json();
       // console.log("data", data);
@@ -260,11 +264,25 @@ const JobListPage = () => {
     });
   };
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     [name]: Number(value) || value,
+  //   }));
+  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Convert numeric inputs to numbers, leave other inputs as strings
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [name]: value,
+      [name]:
+        name === "salaryMin" || name === "salaryMax"
+          ? value
+            ? Number(value)
+            : ""
+          : value,
     }));
   };
 
@@ -298,7 +316,7 @@ const JobListPage = () => {
           value={filters.search}
           onChange={handleInputChange}
           placeholder="Search jobs..."
-          className="border p-2 rounded mb-4 w-full"
+          className="border p-2 rounded mb-4 w-full text-gray-700"
         />
 
         {/* Contract Status */}
@@ -318,18 +336,18 @@ const JobListPage = () => {
             <input
               type="number"
               name="salaryMin"
-              value={filters.salaryMin}
+              value={filters.salaryMin || ""}
               onChange={handleInputChange}
               placeholder="Min Salary"
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full text-gray-700"
             />
             <input
               type="number"
               name="salaryMax"
-              value={filters.salaryMax}
+              value={filters.salaryMax || ""}
               onChange={handleInputChange}
               placeholder="Max Salary"
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full text-gray-700"
             />
           </div>
         </div>
@@ -370,6 +388,7 @@ const JobListPage = () => {
             count={jobs.totalJobsCount}
             onPageChange={handlePageChange}
             currentPage={Number(jobs.currentPage)}
+            totalPages={Number(jobs.totalPages)}
           />
         )}
       </div>

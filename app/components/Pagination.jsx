@@ -1,7 +1,7 @@
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import React from "react";
 
-const Pagination = ({ count, onPageChange, currentPage }) => {
+const Pagination = ({ count, onPageChange, currentPage, totalPages }) => {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
@@ -34,9 +34,9 @@ const Pagination = ({ count, onPageChange, currentPage }) => {
       </button>
       <button
         className={`${
-          currentPage === count - 1 ? "cursor-not-allowed" : ""
+          currentPage === totalPages ? "cursor-not-allowed" : ""
         } p-2 bg-blue-500 rounded`}
-        disabled={currentPage === count}
+        disabled={currentPage === totalPages}
         // onClick={() => handleChangePage("next")}
         onClick={() => onPageChange(currentPage + 1)}
       >
