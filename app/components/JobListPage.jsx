@@ -158,6 +158,7 @@
 // }
 import { useState, useEffect } from "react";
 import JobCard from "./JobCard"; // Import your JobCard component to display individual jobs
+import Pagination from "./Pagination";
 
 const contractOptions = ["Full-time", "Part-time", "Contract", "Temporary"];
 const locationOptions = ["Remote", "On-site", "Hybrid"];
@@ -172,9 +173,15 @@ const benefitsOptions = [
 ];
 
 const JobListPage = () => {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState({
+    jobs: [],
+    totalJobsCount: 0,
+    currentPage: 1,
+    totalPages: 0,
+  });
   const [filters, setFilters] = useState({
     search: "",
+    page: "",
     contractStatus: [],
     locationStatus: [],
     salaryMin: "",
@@ -202,6 +209,9 @@ const JobListPage = () => {
   //     console.error("Error fetching jobs:", error);
   //   }
   // };
+  const handlePageChange = (page) => {
+    setFilters((prevFilters) => ({ ...prevFilters, page }));
+  };
   const fetchJobs = async (filterParams = {}) => {
     const query = new URLSearchParams();
 
@@ -219,7 +229,14 @@ const JobListPage = () => {
     try {
       const res = await fetch(`/api/jobs?${query.toString()}`);
       const data = await res.json();
-      setJobs(data);
+      // console.log("data", data);
+      // setJobs(data);
+      setJobs({
+        jobs: data.jobs,
+        totalJobsCount: data.totalJobsCount,
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+      });
     } catch (error) {
       console.error("Error fetching jobs:", error);
     }
@@ -272,7 +289,7 @@ const JobListPage = () => {
   );
 
   return (
-    <div className="p-4">
+    <div className="p-4 gap-6 sm:flex">
       {/* Job Filters */}
       <div className="mb-6">
         <input
@@ -342,11 +359,18 @@ const JobListPage = () => {
       </div>
 
       {/* Job List */}
-      <div className="grid gap-4">
-        {jobs.length > 0 ? (
-          jobs.map((job) => <JobCard key={job._id} job={job} />)
+      <div className="w-full">
+        {jobs.jobs.length > 0 ? (
+          jobs.jobs.map((job) => <JobCard key={job._id} job={job} />)
         ) : (
           <p>No jobs found</p>
+        )}
+        {jobs.totalJobsCount > 0 && (
+          <Pagination
+            count={jobs.totalJobsCount}
+            onPageChange={handlePageChange}
+            currentPage={Number(jobs.currentPage)}
+          />
         )}
       </div>
     </div>

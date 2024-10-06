@@ -62,9 +62,11 @@ import connectToDatabase from "@/lib/mongodb";
 //   }
 // }
 export async function GET(request) {
+  const ITEM_PER_PAGE = 2;
   await connectToDatabase();
-  const { searchParams } = new URL(request.url);
 
+  const { searchParams } = new URL(request.url);
+  const page = searchParams.get("page") || 1;
   const search = searchParams.get("search") || "";
   const contractStatus = searchParams.getAll("contractStatus");
   const locationStatus = searchParams.getAll("locationStatus");
@@ -101,9 +103,37 @@ export async function GET(request) {
     // Add additional filters like locationRadius or datePosted if necessary
   };
 
+  // try {
+  //   const count = 5;
+  //   const jobs = await Job.find(query)
+  //     .limit(ITEM_PER_PAGE)
+  //     .skip((page - 1) * ITEM_PER_PAGE); // Assuming Job is your MongoDB model
+  //   // console.log("jobs", jobs);
+  //   return new Response(JSON.stringify(jobs, count), { status: 200 });
+  // } catch (error) {
+  //   return new Response(JSON.stringify({ message: "Error fetching jobs" }), {
+  //     status: 500,
+  //   });
+  // }
   try {
-    const jobs = await Job.find(query); // Assuming Job is your MongoDB model
-    return new Response(JSON.stringify(jobs), { status: 200 });
+    // Get the total number of jobs matching the query
+    const totalJobsCount = await Job.countDocuments(query);
+
+    // Get the paginated jobs
+    const jobs = await Job.find(query)
+      .limit(ITEM_PER_PAGE)
+      .skip((page - 1) * ITEM_PER_PAGE);
+
+    // Return jobs and the count as part of the response
+    return new Response(
+      JSON.stringify({
+        jobs, // Array of jobs
+        totalJobsCount, // Total count for pagination
+        currentPage: page, // Current page number
+        totalPages: Math.ceil(totalJobsCount / ITEM_PER_PAGE), // Total pages based on count
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     return new Response(JSON.stringify({ message: "Error fetching jobs" }), {
       status: 500,
