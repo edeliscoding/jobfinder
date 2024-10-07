@@ -159,6 +159,7 @@
 import { useState, useEffect } from "react";
 import JobCard from "./JobCard"; // Import your JobCard component to display individual jobs
 import Pagination from "./Pagination";
+import Link from "next/link";
 
 const contractOptions = ["Full-time", "Part-time", "Contract", "Temporary"];
 const locationOptions = ["Remote", "On-site", "Hybrid"];
@@ -198,17 +199,26 @@ const JobListPage = () => {
     locationCenter: "",
   });
 
-  // Fetch jobs from the API
-  // const fetchJobs = async (filterParams = {}) => {
-  //   const query = new URLSearchParams(filterParams).toString();
-  //   try {
-  //     const res = await fetch(`/api/jobs?${query}`);
-  //     const data = await res.json();
-  //     setJobs(data);
-  //   } catch (error) {
-  //     console.error("Error fetching jobs:", error);
-  //   }
-  // };
+  const handleReset = () => {
+    setFilters({
+      search: "",
+      page: "",
+      contractStatus: [],
+      locationStatus: [],
+      salaryMin: "",
+      salaryMax: "",
+      datePosted: "",
+      experienceLevel: [],
+      companySize: [],
+      industry: [],
+      skills: [],
+      educationLevel: "",
+      benefits: [],
+      jobType: [],
+      locationRadius: "",
+      locationCenter: "",
+    });
+  };
   const handlePageChange = (page) => {
     setFilters((prevFilters) => ({ ...prevFilters, page }));
   };
@@ -296,7 +306,7 @@ const JobListPage = () => {
               type="checkbox"
               name={filterName}
               value={option}
-              checked={filters[filterName].includes(option)}
+              checked={filters[filterName]?.includes(option)}
               onChange={() => handleCheckboxChange(filterName, option)}
             />
             <span>{option}</span>
@@ -399,7 +409,7 @@ const JobListPage = () => {
         <div>
           <h4>Skills</h4>
           <input
-            className="border p-2 rounded w-full text-gray-700"
+            className="border p-2 rounded w-full text-gray-700 mt-4"
             type="text"
             placeholder="Add skills (comma-separated)"
             value={filters.skills?.join(",") || ""}
@@ -420,6 +430,12 @@ const JobListPage = () => {
           onClick={() => fetchJobs(filters)}
         >
           Apply Filters
+        </button>
+        <button
+          className="bg-green-500 text-white p-2 rounded ml-4"
+          onClick={handleReset}
+        >
+          Reset Filters
         </button>
       </div>
 
