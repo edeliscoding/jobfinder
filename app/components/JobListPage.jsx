@@ -190,7 +190,7 @@ const JobListPage = () => {
     experienceLevel: [],
     companySize: [],
     industry: [],
-    skills: "",
+    skills: [],
     educationLevel: "",
     benefits: [],
     jobType: [],
@@ -367,6 +367,53 @@ const JobListPage = () => {
 
         {/* Job Type */}
         {renderCheckboxGroup("Job Type", "jobType", jobTypeOptions)}
+        <div>
+          <h4>Education Level</h4>
+          <select
+            value={filters.educationLevel || ""}
+            onChange={(e) => handleInputChange(e)}
+            name="educationLevel"
+            className="border p-2 rounded w-full text-gray-700"
+          >
+            <option value="">Any</option>
+            <option value="High School">High School</option>
+            <option value="Bachelor's">Bachelor's</option>
+            <option value="Master's">Master's</option>
+            <option value="PhD">PhD</option>
+          </select>
+        </div>
+        <div className="mt-4">
+          <h4>Date Posted</h4>
+          <select
+            value={filters.datePosted || ""}
+            onChange={(e) => handleInputChange(e)}
+            name="datePosted"
+            className="border p-2 rounded w-full text-gray-700"
+          >
+            <option value="">Any time</option>
+            <option value="1">Past 24 hours</option>
+            <option value="7">Past week</option>
+            <option value="30">Past month</option>
+          </select>
+        </div>
+        <div>
+          <h4>Skills</h4>
+          <input
+            className="border p-2 rounded w-full text-gray-700"
+            type="text"
+            placeholder="Add skills (comma-separated)"
+            value={filters.skills?.join(",") || ""}
+            onChange={(e) =>
+              handleInputChange({
+                target: {
+                  name: "skills",
+                  // value: e.target.value.split(","),
+                  value: e.target.value.split(",").map((skill) => skill.trim()),
+                },
+              })
+            }
+          />
+        </div>
 
         <button
           className="bg-blue-500 text-white p-2 rounded mt-4"

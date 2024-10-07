@@ -563,9 +563,11 @@ import connectToDatabase from "@/lib/mongodb";
 // }
 export async function GET(request) {
   const ITEM_PER_PAGE = 5;
+
   await connectToDatabase();
 
   const { searchParams } = new URL(request.url);
+
   const page = searchParams.get("page") || 1;
   const search = searchParams.get("search") || "";
   const contractStatus = searchParams.getAll("contractStatus");
@@ -576,15 +578,15 @@ export async function GET(request) {
   const experienceLevel = searchParams.getAll("experienceLevel");
   const companySize = searchParams.getAll("companySize");
   const industry = searchParams.get("industry");
-  const skills = searchParams.get("skills");
+  const skills = searchParams.getAll("skills");
   const educationLevel = searchParams.get("educationLevel");
   const benefits = searchParams.getAll("benefits");
   const jobType = searchParams.getAll("jobType");
   const locationRadius = searchParams.get("locationRadius");
   const locationCenter = searchParams.get("locationCenter");
 
-  console.log("salaryMin", salaryMin);
-  console.log("salaryMax", salaryMax);
+  const date = new Date();
+  date.setDate(date.getDate() - parseInt(datePosted));
 
   const query = {
     ...(search && { title: { $regex: search, $options: "i" } }),
@@ -596,10 +598,7 @@ export async function GET(request) {
     ...(companySize.length && { companySize: { $in: companySize } }),
     ...(benefits.length && { benefits: { $in: benefits } }),
     ...(jobType.length && { jobType: { $in: jobType } }),
-    // ...(salaryMin &&
-    //   salaryMax && {
-    //     salary: { $gte: Number(salaryMin), $lte: Number(salaryMax) },
-    //   }),
+
     ...(salaryMin && {
       "salary.min": { $gte: Number(salaryMin) }, // Filter for salary.min
     }),
@@ -607,23 +606,22 @@ export async function GET(request) {
       "salary.max": { $lte: Number(salaryMax) }, // Filter for salary.max
     }),
     ...(industry && { industry: industry }),
-    ...(skills && { skills: { $regex: skills, $options: "i" } }),
+    ...(skills.length && {
+      skills: { $in: skills.map((skill) => new RegExp(skill, "i")) },
+    }),
+    // ...(skills && { skills: { $regex: skills, $options: "i" } }),
     ...(educationLevel && { educationLevel: educationLevel }),
     // Add additional filters like locationRadius or datePosted if necessary
+    ...(datePosted && {
+      datePosted: { $gte: date },
+      // if(datePosted) {
+      //   const date = new Date();
+      //   date.setDate(date.getDate() - parseInt(datePosted));
+      //   postedDate = { $gte: date };
+      // },
+    }),
   };
 
-  // try {
-  //   const count = 5;
-  //   const jobs = await Job.find(query)
-  //     .limit(ITEM_PER_PAGE)
-  //     .skip((page - 1) * ITEM_PER_PAGE); // Assuming Job is your MongoDB model
-  //   // console.log("jobs", jobs);
-  //   return new Response(JSON.stringify(jobs, count), { status: 200 });
-  // } catch (error) {
-  //   return new Response(JSON.stringify({ message: "Error fetching jobs" }), {
-  //     status: 500,
-  //   });
-  // }
   try {
     // Get the total number of jobs matching the query
     const totalJobsCount = await Job.countDocuments(query);
