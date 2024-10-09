@@ -628,6 +628,7 @@ export async function GET(request) {
 
     // Get the paginated jobs
     const jobs = await Job.find(query)
+      .sort({ createdAt: -1 })
       .limit(ITEM_PER_PAGE)
       .skip((page - 1) * ITEM_PER_PAGE);
 

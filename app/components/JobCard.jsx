@@ -1,10 +1,13 @@
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function JobCard({ key, job }) {
+  const router = useRouter();
   return (
     <div
       key={job._id}
-      className="p-6 border border-gray-700 rounded-lg w-full mt-4 bg-gray-900 text-white sm:flex sm:items-center sm:justify-between gap-4"
+      className="p-6 border border-gray-700 rounded-lg w-full mt-4 bg-gray-900 text-white sm:flex sm:items-center sm:justify-between gap-4 cursor-pointer hover:bg-gray-700"
+      onClick={() => router.push(`/jobs/${job._id}`)}
     >
       <div>
         <h2 className="text-xl font-semibold text-white mb-2">{job.title}</h2>

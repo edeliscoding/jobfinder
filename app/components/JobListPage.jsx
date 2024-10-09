@@ -406,10 +406,10 @@ const JobListPage = () => {
             <option value="30">Past month</option>
           </select>
         </div>
-        <div>
+        <div className="mt-4">
           <h4>Skills</h4>
           <input
-            className="border p-2 rounded w-full text-gray-700 mt-4"
+            className="border p-2 rounded w-full text-gray-700 "
             type="text"
             placeholder="Add skills (comma-separated)"
             value={filters.skills?.join(",") || ""}

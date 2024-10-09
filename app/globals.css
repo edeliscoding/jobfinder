@@ -25,3 +25,12 @@ body {
     text-wrap: balance;
   }
 }
+
+input {
+  color: #171717;
+  padding: 0.5rem;
+}
+
+#job-form label {
+  color: #ededed;
+}
