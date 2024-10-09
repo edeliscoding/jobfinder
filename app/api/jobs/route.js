@@ -596,7 +596,9 @@ export async function GET(request) {
       experienceLevel: { $in: experienceLevel },
     }),
     ...(companySize.length && { companySize: { $in: companySize } }),
-    ...(benefits.length && { benefits: { $in: benefits } }),
+    ...(benefits.length && {
+      benefits: { $in: benefits.map((benefit) => new RegExp(benefit, "i")) },
+    }),
     ...(jobType.length && { jobType: { $in: jobType } }),
 
     ...(salaryMin && {

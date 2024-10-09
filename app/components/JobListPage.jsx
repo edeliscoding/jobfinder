@@ -373,7 +373,27 @@ const JobListPage = () => {
         {renderCheckboxGroup("Company Size", "companySize", companySizeOptions)}
 
         {/* Benefits */}
-        {renderCheckboxGroup("Benefits", "benefits", benefitsOptions)}
+        {/* {renderCheckboxGroup("Benefits", "benefits", benefitsOptions)} */}
+        <div className="mt-4">
+          <h4>Benefits</h4>
+          <input
+            className="border p-2 rounded w-full text-gray-700 "
+            type="text"
+            placeholder="Add Benefits (comma-separated)"
+            value={filters.benefits?.join(",") || ""}
+            onChange={(e) =>
+              handleInputChange({
+                target: {
+                  name: "benefits",
+                  // value: e.target.value.split(","),
+                  value: e.target.value
+                    .split(",")
+                    .map((benefit) => benefit.trim()),
+                },
+              })
+            }
+          />
+        </div>
 
         {/* Job Type */}
         {renderCheckboxGroup("Job Type", "jobType", jobTypeOptions)}

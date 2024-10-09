@@ -1,11 +1,16 @@
 "use client";
 import { useState } from "react";
 import { createJobAction } from "@/app/actions/createJob";
+import toast from "react-hot-toast";
+import { handleSubmit } from "@/app/actions/createJob";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function CreateJobForm() {
   const [skills, setSkills] = useState([""]);
   const [benefits, setBenefits] = useState([""]);
   const [requirements, setRequirements] = useState([""]);
+  const router = useRouter();
 
   const industries = ["Technology", "Healthcare", "Education", "Finance"];
 
@@ -35,12 +40,30 @@ export default function CreateJobForm() {
     updatedFields.splice(index, 1);
     fieldSetter(updatedFields);
   };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    // Convert form data for the server action
+    const formData = new FormData(event.target);
+    const result = await handleSubmit(formData);
+
+    // Show toast notification based on server response
+    if (result.success) {
+      toast.success(result.message);
+      router.push("/");
+    } else {
+      toast.error(result.message);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto bg-gray-800 shadow-lg p-6 rounded-lg mt-8">
       <h2 className="text-2xl font-semibold mb-6">Create a Job</h2>
 
       {/* Add action to form and use method POST */}
-      <form action={createJobAction} className="space-y-4" id="job-form">
+      {/* <form action={createJobAction} className="space-y-4" id="job-form"> */}
+      <form onSubmit={handleFormSubmit} className="space-y-4" id="job-form">
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Job title
@@ -133,7 +156,18 @@ export default function CreateJobForm() {
             />
           </div>
         </div>
-
+        <div>
+          <h4>Location Status</h4>
+          <select
+            name="locationStatus"
+            className="mt-1 block w-full p-2 border rounded-md text-gray-700"
+          >
+            <option value=""></option>
+            <option value="Hybrid">Remote</option>
+            <option value="Part-time">On-site</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Job description

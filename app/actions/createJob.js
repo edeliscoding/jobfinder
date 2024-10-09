@@ -55,6 +55,7 @@ export async function createJobAction(data) {
       companyName: data.get("companyName"),
       companyLogo: data.get("companyLogo"),
       contractStatus: data.get("jobContract"),
+      locationStatus: data.get("locationStatus"),
       location: {
         city: data.get("city"),
         state: data.get("state"),
@@ -77,11 +78,28 @@ export async function createJobAction(data) {
       // createdAt: data.get("createdOn"),
     });
 
-    return { success: true, insertedId: result.insertedId };
+    return {
+      success: true,
+      message: "Job created successfully",
+      insertedId: result.insertedId,
+    };
   } catch (error) {
     console.error(error);
-    return { success: false, error: "Failed to create job." };
+    return {
+      success: false,
+      message: "Failed to create job.",
+      error: "Failed to create job.",
+    };
   }
   revalidatePath("/");
   redirect("/");
 }
+
+export const handleSubmit = async (formData) => {
+  "use server"; // Server action
+
+  const result = await createJobAction(formData);
+
+  // Pass the result to the client (no direct client-side code here)
+  return result;
+};
